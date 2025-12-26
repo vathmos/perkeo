@@ -35,8 +35,8 @@ client.on("message", async (msg) => {
 
       await client.sendMessage(msg.from, media, {
         sendMediaAsSticker: true,
-        stickerAuthor: "of Heidelberg",
-        stickerName: "Perkeo Bot",
+        stickerAuthor: "Bot",
+        stickerName: "Perkeo",
       });
       return;
     }
@@ -53,8 +53,8 @@ client.on("message", async (msg) => {
         const media = await targetMsg.downloadMedia();
         await client.sendMessage(msg.from, media, {
           sendMediaAsSticker: true,
-          stickerAuthor: "Perkeo Bot",
-          stickerName: "Sticker",
+          stickerAuthor: "Bot",
+          stickerName: "Perkeo",
         });
       }
     }
