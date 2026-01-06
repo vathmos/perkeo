@@ -1,8 +1,11 @@
 import { Client, LocalAuth, MessageMedia } from "whatsapp-web.js";
 import qrcode from "qrcode-terminal";
 import { CanvasRenderingContext2D, createCanvas, registerFont } from "canvas";
+import ffmpeg from "fluent-ffmpeg"
 
 registerFont("./arialnarrow.ttf", { family: "arialnarrow" });
+ffmpeg.setFfmpegPath(process.env.FFMPEG_PATH!);
+ffmpeg.setFfprobePath(process.env.FFPROBE_PATH!);
 
 const client = new Client({
   authStrategy: new LocalAuth(),

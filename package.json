@@ -5,6 +5,7 @@
   "private": true,
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/fluent-ffmpeg": "^2.1.28",
     "@types/qrcode-terminal": "^0.12.2"
   },
   "peerDependencies": {
@@ -12,6 +13,7 @@
   },
   "dependencies": {
     "canvas": "^3.2.0",
+    "fluent-ffmpeg": "^2.1.3",
     "qrcode-terminal": "^0.12.0",
     "stackblur-canvas": "^2.7.0",
     "whatsapp-web.js": "^1.34.2"
