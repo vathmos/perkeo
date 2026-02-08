@@ -2,6 +2,8 @@ import { Client, LocalAuth } from "whatsapp-web.js";
 import qrcode from "qrcode-terminal";
 import ffmpeg from "fluent-ffmpeg";
 import { handleBratCommand } from "../commands/brat";
+import { handleHelpCommand } from "../commands/help";
+import { handlePingCommand } from "../commands/ping";
 import { handleStickerCommand } from "../commands/sticker";
 
 ffmpeg.setFfmpegPath(process.env.FFMPEG_PATH!);
@@ -25,6 +27,16 @@ export function createClient(): Client {
 
   client.on("message", async (msg) => {
     try {
+      const handledHelp = await handleHelpCommand(msg);
+      if (handledHelp) {
+        return;
+      }
+
+      const handledPing = await handlePingCommand(msg);
+      if (handledPing) {
+        return;
+      }
+
       const handledBrat = await handleBratCommand(msg, client);
       if (handledBrat) {
         return;
