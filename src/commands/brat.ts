@@ -1,72 +1,41 @@
-import { Client, LocalAuth, MessageMedia } from "whatsapp-web.js";
-import qrcode from "qrcode-terminal";
+import type { Client, Message } from "whatsapp-web.js";
+import { MessageMedia } from "whatsapp-web.js";
 import { CanvasRenderingContext2D, createCanvas, registerFont } from "canvas";
-import ffmpeg from "fluent-ffmpeg"
+import { fileURLToPath } from "url";
 
-registerFont("./arialnarrow.ttf", { family: "arialnarrow" });
-ffmpeg.setFfmpegPath(process.env.FFMPEG_PATH!);
-ffmpeg.setFfprobePath(process.env.FFPROBE_PATH!);
+const fontPath = fileURLToPath(
+  new URL("../../assets/fonts/arialnarrow.ttf", import.meta.url),
+);
 
-const client = new Client({
-  authStrategy: new LocalAuth(),
-  puppeteer: {
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+registerFont(fontPath, { family: "arialnarrow" });
+
+export async function handleBratCommand(
+  msg: Message,
+  client: Client,
+): Promise<boolean> {
+  const body = msg.body ?? "";
+
+  if (!body.toLowerCase().startsWith("!brat")) {
+    return false;
   }
-});
 
-client.on("qr", (qr: string) => {
-  qrcode.generate(qr, { small: true });
-});
-
-client.on("ready", () => {
-  console.log("Perkeo Bot is online.");
-});
-
-client.on("message", async (msg) => {
-  try {
-    const body = msg.body ?? "";
-
-    if (body.toLowerCase().startsWith("!brat")) {
-      const text = body.slice(5).trim();
-      if (!text) {
-        await msg.reply("Usage: !brat <text>");
-        return;
-      }
-
-      const buffer = await generateBratImage(text);
-      const media = new MessageMedia("image/png", buffer.toString("base64"));
-
-      await client.sendMessage(msg.from, media, {
-        sendMediaAsSticker: true,
-        stickerAuthor: "Bot",
-        stickerName: "Perkeo",
-      });
-      return;
-    }
-
-    const isStickerCommand = body.toLowerCase() === "!sticker";
-
-    if (isStickerCommand) {
-      let targetMsg = msg;
-      if (msg.hasQuotedMsg) {
-        targetMsg = await msg.getQuotedMessage();
-      }
-
-      if (targetMsg.hasMedia) {
-        const media = await targetMsg.downloadMedia();
-        await client.sendMessage(msg.from, media, {
-          sendMediaAsSticker: true,
-          stickerAuthor: "Bot",
-          stickerName: "Perkeo",
-        });
-      }
-    }
-  } catch (err) {
-    console.error("Error:", err);
+  const text = body.slice(5).trim();
+  if (!text) {
+    await msg.reply("Usage: !brat <text>");
+    return true;
   }
-});
 
-client.initialize();
+  const buffer = await generateBratImage(text);
+  const media = new MessageMedia("image/png", buffer.toString("base64"));
+
+  await client.sendMessage(msg.from, media, {
+    sendMediaAsSticker: true,
+    stickerAuthor: "Bot",
+    stickerName: "Perkeo",
+  });
+
+  return true;
+}
 
 /**
  * Generates the Brat-styled image with specific justification and blur

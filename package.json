@@ -1,8 +1,11 @@
 {
   "name": "perkeo",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "start": "bun run src/index.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/fluent-ffmpeg": "^2.1.28",
