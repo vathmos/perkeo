@@ -16,6 +16,6 @@
     "fluent-ffmpeg": "^2.1.3",
     "qrcode-terminal": "^0.12.0",
     "stackblur-canvas": "^2.7.0",
-    "whatsapp-web.js": "^1.34.2"
+    "whatsapp-web.js": "^1.34.6"
   }
 }
