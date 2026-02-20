@@ -6,7 +6,9 @@ const HELP_MESSAGE = [
   "!ping - check bot status",
   "!brat <text> - generate a brat sticker",
   "!sticker | !s - turn quoted media into a sticker",
+  "!sticker <image_url> | !s <image_url> - make sticker from image URL",
   "!sticker temp | !s temp - delete source + sticker after 10s",
+  "!sticker temp <image_url> | !s temp <image_url> - temporary URL sticker",
 ].join("\n");
 
 export async function handleHelpCommand(msg: Message): Promise<boolean> {

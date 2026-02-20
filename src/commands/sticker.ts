@@ -1,4 +1,4 @@
-import type { Client, Message } from "whatsapp-web.js";
+import { MessageMedia, type Client, type Message } from "whatsapp-web.js";
 
 export async function handleStickerCommand(
   msg: Message,
@@ -14,35 +14,71 @@ export async function handleStickerCommand(
   }
 
   const isTemp = args[0]?.toLowerCase() === "temp";
+  const urlArg = isTemp ? args[1] : args[0];
 
   let targetMsg = msg;
   if (msg.hasQuotedMsg) {
     targetMsg = await msg.getQuotedMessage();
   }
 
+  let media: MessageMedia | undefined;
+  let sourceId: string | undefined;
+
   if (targetMsg.hasMedia) {
-    const media = await targetMsg.downloadMedia();
+    media = await targetMsg.downloadMedia();
     if (!media) {
       await msg.reply("I couldn't download that media. Try again.");
       return true;
     }
-
-    const sentSticker = await client.sendMessage(msg.from, media, {
-      sendMediaAsSticker: true,
-      stickerAuthor: "Bot",
-      stickerName: "Perkeo",
-    });
-
-    if (isTemp) {
-      scheduleTempDelete(
-        client,
-        targetMsg.id?._serialized,
-        sentSticker.id?._serialized,
-      );
+    sourceId = targetMsg.id?._serialized;
+  } else if (urlArg) {
+    const imageUrl = parseHttpUrl(urlArg);
+    if (!imageUrl) {
+      await msg.reply("Invalid image URL. Use http(s) only.");
+      return true;
     }
+
+    try {
+      media = await MessageMedia.fromUrl(imageUrl.toString(), {
+        unsafeMime: true,
+      });
+    } catch {
+      await msg.reply("I couldn't download that URL. Try another image link.");
+      return true;
+    }
+
+    if (!media.mimetype.startsWith("image/")) {
+      await msg.reply("That URL is not an image.");
+      return true;
+    }
+  } else {
+    await msg.reply("Reply to an image/video or use: !sticker <image_url>");
+    return true;
+  }
+
+  const sentSticker = await client.sendMessage(msg.from, media, {
+    sendMediaAsSticker: true,
+    stickerAuthor: "Bot",
+    stickerName: "Perkeo",
+  });
+
+  if (isTemp) {
+    scheduleTempDelete(client, sourceId, sentSticker.id?._serialized);
   }
 
   return true;
+}
+
+function parseHttpUrl(raw: string): URL | null {
+  try {
+    const url = new URL(raw);
+    if (url.protocol === "http:" || url.protocol === "https:") {
+      return url;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 const TEMP_DELETE_DELAY_MS = 10_000;
@@ -110,7 +146,13 @@ async function tryRevokeBoth(
 
   try {
     return (await page.evaluate(
-      async ({ sourceId, stickerId }) => {
+      async ({
+        sourceId,
+        stickerId,
+      }: {
+        sourceId?: string;
+        stickerId?: string;
+      }) => {
         const browserWindow = globalThis as any;
         const ids = [sourceId, stickerId].filter(Boolean);
         const missing = [];

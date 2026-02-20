@@ -5,7 +5,9 @@ A WhatsApp bot built on `whatsapp-web.js` that generates stickers and a Brat-sty
 ## Features
 - `!brat <text>` generates a Brat-style sticker.
 - `!sticker` or `!s` turns quoted media into a sticker.
+- `!sticker <image_url>` or `!s <image_url>` turns an image link into a sticker.
 - `!sticker temp` or `!s temp` deletes the source media and the sticker after 10 seconds.
+- `!sticker temp <image_url>` or `!s temp <image_url>` sends a temporary sticker from an image link.
 - `!help` lists available commands.
 - `!ping` replies with `The fool lives!`.
 
@@ -15,8 +17,12 @@ A WhatsApp bot built on `whatsapp-web.js` that generates stickers and a Brat-sty
 - `!brat <text>`
 - `!sticker`
 - `!s`
+- `!sticker <image_url>`
+- `!s <image_url>`
 - `!sticker temp`
 - `!s temp`
+- `!sticker temp <image_url>`
+- `!s temp <image_url>`
 
 ## Setup
 
